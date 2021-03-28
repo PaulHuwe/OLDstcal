@@ -2,8 +2,8 @@
 
 #from ..stpipe import Step
 #from stpipe import Step
-from ..stpipe import RomanStep
-from .. import datamodels
+from romancal.stpipe import RomanStep
+#from . import datamodels
 from . import dq_initialization
 
 
@@ -41,23 +41,21 @@ class DQInitStep(RomanStep):
         try:
             input_model = datamodels.RampModel(input)
 
-        # Commented for Guider implementation
-        #
-        #     # Check to see if it's Guider raw data
-        #     if input_model.meta.exposure.type in dq_initialization.guider_list:
-        #         # Reopen as a GuiderRawModel
-        #         input_model.close()
-        #         input_model = datamodels.GuiderRawModel(input)
-        #         self.log.info("Input opened as GuiderRawModel")
-        #
-        # except (TypeError, ValueError):
-        #     # If the initial open attempt fails,
-        #     # try to open as a GuiderRawModel
-        #     try:
-        #         input_model = datamodels.GuiderRawModel(input)
-        #         self.log.info("Input opened as GuiderRawModel")
-        #     except (TypeError, ValueError):
-        #         self.log.error("Unexpected or unknown input model type")
+            # Check to see if it's Guider raw data
+            if input_model.meta.exposure.type in dq_initialization.guider_list:
+                # Reopen as a GuiderRawModel
+                input_model.close()
+                input_model = datamodels.GuiderRawModel(input)
+                self.log.info("Input opened as GuiderRawModel")
+
+        except (TypeError, ValueError):
+            # If the initial open attempt fails,
+            # try to open as a GuiderRawModel
+            try:
+                input_model = datamodels.GuiderRawModel(input)
+                self.log.info("Input opened as GuiderRawModel")
+            except (TypeError, ValueError):
+                self.log.error("Unexpected or unknown input model type")
         except Exception:
             self.log.error("Can't open input")
             raise

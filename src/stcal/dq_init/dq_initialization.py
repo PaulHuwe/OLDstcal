@@ -2,15 +2,14 @@ import logging
 
 import numpy as np
 
-from .. import datamodels
+#from .. import datamodels
 #from ..lib import reffile_utils
+#from romancal import datamodels
+#from .. import reffile_utils
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
-
-# Guide star mode exposure types
-guider_list = ['WFI_WIM_ACQ','WFI_WIM_TRACK','WFI_WSM_ACQ1','WFI_WSM_ACQ2','WFI_WSM_TRACK']
 
 #
 # def correct_model(input_model, mask_model):
@@ -35,7 +34,7 @@ guider_list = ['WFI_WIM_ACQ','WFI_WIM_TRACK','WFI_WSM_ACQ1','WFI_WSM_ACQ2','WFI_
 #     return output_model
 
 
-def do_dqinit(input_model, mask_model):
+def do_dqinit(input_model, mask_model, guider_list=None):
     """Perform the dq_init step on a Roman datamodel
 
     Parameters
@@ -58,8 +57,7 @@ def do_dqinit(input_model, mask_model):
     # Create output model as copy of input
     output_model = input_model.copy()
 
-    # Commented due to lack of subarrays.
-    #
+    # Needs to be generalized (subarrays)
     # # Extract subarray from reference data, if necessary
     # if reffile_utils.ref_matches_sci(output_model, mask_model):
     #     mask_array = mask_model.dq
@@ -70,7 +68,7 @@ def do_dqinit(input_model, mask_model):
     #     mask_array = mask_sub_model.dq.copy()
     #     mask_sub_model.close()
 
-    # Extract subarray from reference data, if necessary
+    # Following line is temporary replacement
     mask_array = mask_model.dq
 
 
@@ -107,8 +105,7 @@ def check_dimensions(input_model):
 
     input_shape = input_model.data.shape
 
-    # Commented until GuiderRawModel implemented.
-    #
+    # Temporary commented until GuiderModels implemented
     # if isinstance(input_model, datamodels.GuiderRawModel):
     #     if input_model.dq.shape != input_shape[-2:]:
     #
@@ -120,11 +117,9 @@ def check_dimensions(input_model):
     #         else:
     #             log.error("DQ array has the wrong shape: (%d, %d)" %
     #                       input_model.dq.shape)
-
-    # Temporary bypass until GuiderRawModel implemented.
-    if False:
-        pass
-    else:   # RampModel
+    #
+    # else:   # RampModel
+    if True:
         if input_model.pixeldq.shape != input_shape[-2:]:
 
             # If the shape is different, then the mask model should have
