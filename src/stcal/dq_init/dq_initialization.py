@@ -1,54 +1,24 @@
 import logging
-
 import numpy as np
-
-#from .. import datamodels
-#from ..lib import reffile_utils
-#from romancal import datamodels
-#from .. import reffile_utils
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
-
-#
-# def correct_model(input_model, mask_model):
-#     """Perform the dq_init step on a Roman datamodel
-#
-#     Parameters
-#     ----------
-#     input_model : input Roman datamodel
-#         The Roman datamodel to be corrected
-#
-#     mask_model : mask datamodel
-#         The mask model to use in the correction
-#
-#     Returns
-#     -------
-#     output_model : Roman datamodel
-#         The corrected Roman datamodel
-#     """
-#
-#     output_model = do_dqinit(input_model, mask_model)
-#
-#     return output_model
-
-
 def do_dqinit(input_model, mask_model, guider_list=None):
-    """Perform the dq_init step on a Roman datamodel
+    """Perform the dq_init step on a datamodel
 
     Parameters
     ----------
-    input_model : input Roman datamodel
-        The Roman datamodel to be corrected
+    input_model : input science datamodel
+        The science datamodel to be corrected
 
     mask_model : mask datamodel
         The mask model to use in the correction
 
     Returns
     -------
-    output_model : Roman datamodel
-        The corrected Roman datamodel
+    output_model : science datamodel
+        The dq corrected science datamodel
     """
 
     # Inflate empty DQ array, if necessary
@@ -57,20 +27,7 @@ def do_dqinit(input_model, mask_model, guider_list=None):
     # Create output model as copy of input
     output_model = input_model.copy()
 
-    # Needs to be generalized (subarrays)
-    # # Extract subarray from reference data, if necessary
-    # if reffile_utils.ref_matches_sci(output_model, mask_model):
-    #     mask_array = mask_model.dq
-    # else:
-    #     log.info('Extracting mask subarray to match science data')
-    #     mask_sub_model = reffile_utils.get_subarray_model(output_model,
-    #                                                       mask_model)
-    #     mask_array = mask_sub_model.dq.copy()
-    #     mask_sub_model.close()
-
-    # Following line is temporary replacement
     mask_array = mask_model.dq
-
 
     # Set model-specific data quality in output
     if input_model.meta.exposure.type in guider_list:
@@ -80,7 +37,7 @@ def do_dqinit(input_model, mask_model, guider_list=None):
         dq = np.bitwise_or(input_model.pixeldq, mask_array)
         output_model.pixeldq = dq
 
-    output_model.meta.cal_step.dq_init = 'COMPLETE'
+    output_model['meta']['cal_step']['dq_init'] = 'COMPLETE'
 
     return output_model
 
@@ -105,7 +62,7 @@ def check_dimensions(input_model):
 
     input_shape = input_model.data.shape
 
-    # Temporary commented until GuiderModels implemented
+    # Temporarily commented until GuiderModels implemented
     # if isinstance(input_model, datamodels.GuiderRawModel):
     #     if input_model.dq.shape != input_shape[-2:]:
     #
